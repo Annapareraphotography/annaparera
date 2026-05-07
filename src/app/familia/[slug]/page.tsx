@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { ArrowLeft, X, ChevronLeft, ChevronRight, Calendar, MapPin } from 'lucide-react';
 import Link from 'next/link';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 const familiaStories = {
   // Embarazo stories
@@ -175,8 +176,18 @@ export default function FamiliaStoryPage() {
   const slug = params.slug as string;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const heroRef = useRef<HTMLElement>(null);
+  const isMobile = useIsMobile();
   
   const story = familiaStories[slug as keyof typeof familiaStories];
+  
+  // Helper to get responsive image URL
+  const getGalleryImageUrl = (url: string) => {
+    return url.replace('w_1200', isMobile ? 'w_600' : 'w_1200');
+  };
+  
+  const getLightboxImageUrl = (url: string) => {
+    return url.replace('w_1200', isMobile ? 'w_800' : 'w_1800');
+  };
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -327,7 +338,7 @@ export default function FamiliaStoryPage() {
                 onClick={() => setSelectedIndex(index)}
               >
                 <img
-                  src={image}
+                  src={getGalleryImageUrl(image)}
                   alt={`${story.title} — ${index + 1}`}
                   loading="lazy"
                   className="w-full h-auto transition-transform duration-700 ease-out group-hover:scale-[1.03]"
@@ -419,11 +430,22 @@ export default function FamiliaStoryPage() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              src={story.images[selectedIndex].replace('w_1200', 'w_1800')}
+              src={getLightboxImageUrl(story.images[selectedIndex])}
               alt={`${story.title} — ${selectedIndex + 1}`}
-              className="max-w-[90vw] max-h-[85vh] object-contain select-none"
+              className="max-w-[90vw] max-h-[85vh] object-contain select-none cursor-grab active:cursor-grabbing"
               onClick={(e) => e.stopPropagation()}
               draggable={false}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipeThreshold = 50;
+                if (offset.x > swipeThreshold && selectedIndex > 0) {
+                  navigate(-1);
+                } else if (offset.x < -swipeThreshold && selectedIndex < story.images.length - 1) {
+                  navigate(1);
+                }
+              }}
             />
           </motion.div>
         )}

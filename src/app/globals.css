@@ -28,3 +28,14 @@ body {
   background: rgb(var(--background));
   color: rgb(var(--foreground));
 }
+
+/* Hide scrollbar but keep functionality */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
+}

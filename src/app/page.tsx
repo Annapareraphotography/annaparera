@@ -262,13 +262,13 @@ export default function CataloguePage() {
       {/* Category Filter */}
       <section className="sticky top-0 z-40 bg-white/95 dark:bg-neutral-950/90 backdrop-blur-xl border-b border-neutral-200/50 dark:border-neutral-800/50">
         <div className="container max-w-7xl mx-auto px-4 py-5">
-          <div className="flex flex-wrap gap-2 justify-center">
+          <div className="flex gap-2 justify-center overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory">
             {filterOptions.map((filter) => (
               <motion.button
                 key={filter.id}
                 onClick={() => setSelectedCategory(filter.id)}
                 whileTap={{ scale: 0.95 }}
-                className={`relative px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                className={`relative px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 snap-start flex-shrink-0 ${
                   selectedCategory === filter.id
                     ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 shadow-md'
                     : 'bg-neutral-100 text-neutral-500 hover:text-neutral-800 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-200'
