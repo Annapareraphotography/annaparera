@@ -144,7 +144,7 @@ function ServicePanel({
       initial={{ opacity: 0, y: index === 0 ? -30 : 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1, delay: 0.4 + index * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="relative group flex-1 min-h-[55vh] md:min-h-screen overflow-hidden bg-neutral-900"
+      className="relative group flex-1 min-h-[55vh] md:min-h-screen overflow-hidden bg-[#f5e6db]"
     >
       <Link href={service.href} className="block w-full h-full">
         <motion.img
