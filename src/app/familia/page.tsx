@@ -12,9 +12,9 @@ const sections = [
     subtitle: 'Maternity Sessions',
     description: 'La belleza y emoción de la espera. Sesiones íntimas que capturan la conexión con la vida que está por llegar.',
     stories: [
-      { name: 'María & Carlos', slug: 'embarazo-maria-carlos', img: 'DSC09790', location: 'Barcelona' },
-      { name: 'Laura', slug: 'embarazo-laura', img: 'DSC04671', location: 'Collserola' },
-      { name: 'Sofía & Jorge', slug: 'embarazo-sofia-jorge', img: 'Diseno-sin-titulo-1', location: 'Estudio Barcelona' },
+      { name: 'Semanas 28-34', slug: 'embarazo', img: 'DSC09790', location: 'Estudio, Hogar o Exterior' },
+      { name: 'Luz Natural', slug: 'embarazo', img: 'DSC04671', location: 'Sesiones íntimas' },
+      { name: 'Momentos Únicos', slug: 'embarazo', img: 'Diseno-sin-titulo-1', location: 'Capturando la espera' },
     ],
   },
   {
@@ -23,9 +23,9 @@ const sections = [
     subtitle: 'Family Portraits',
     description: 'Sesiones naturales que capturan la conexión y el amor de vuestra familia. Sin poses, solo vosotros.',
     stories: [
-      { name: 'Familia González', slug: 'familia-gonzalez', img: 'DSC01290', location: 'Parc de la Ciutadella' },
-      { name: 'Familia Martínez', slug: 'familia-martinez', img: 'DSC01649', location: 'Barcelona' },
-      { name: 'Familia Rodríguez', slug: 'familia-rodriguez', img: 'DSC03595', location: 'Montjuïc' },
+      { name: 'Sesiones Familiares', slug: 'familiar', img: 'DSC01290', location: 'Parques y Exteriores' },
+      { name: 'Conexión Real', slug: 'familiar', img: 'DSC01649', location: 'Sin poses forzadas' },
+      { name: 'Momentos Naturales', slug: 'familiar', img: 'DSC03595', location: 'Vuestra familia' },
     ],
   },
   {
@@ -34,9 +34,20 @@ const sections = [
     subtitle: 'Recién Nacidos',
     description: 'Los primeros días, tan frágiles y perfectos. Cada detalle capturado con delicadeza y amor.',
     stories: [
-      { name: 'Bebé Emma', slug: 'newborn-emma', img: 'DSC09256-Edit', location: 'Estudio Barcelona' },
-      { name: 'Bebé Lucas', slug: 'newborn-lucas', img: 'DSC08040-1', location: 'Domicilio familiar' },
-      { name: 'Bebé Olivia', slug: 'newborn-olivia', img: 'DSC04412', location: 'Estudio Barcelona' },
+      { name: 'Primeros Días', slug: 'newborn', img: 'DSC09256-Edit', location: '7-15 días' },
+      { name: 'En Casa', slug: 'newborn', img: 'DSC08040-1', location: 'Hogar o Estudio' },
+      { name: 'Dulzura Natural', slug: 'newborn', img: 'DSC04412', location: 'Sesiones delicadas' },
+    ],
+  },
+  {
+    id: 'peques',
+    title: 'Infantil',
+    subtitle: 'Kids Photography',
+    description: 'Capturando la magia de cada etapa, desde los 6 meses hasta que ya son mayores.',
+    stories: [
+      { name: 'Peques', slug: 'peques', img: 'DSC05821', location: '6 meses en adelante' },
+      { name: 'Espontaneidad', slug: 'peques', img: 'DSC00770', location: 'Sesiones divertidas' },
+      { name: 'Momentos Mágicos', slug: 'peques', img: 'DSC00931', location: 'Sin límite de edad' },
     ],
   },
 ];
