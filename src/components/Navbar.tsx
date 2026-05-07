@@ -48,12 +48,12 @@ export default function Navbar() {
             <Link
               href="/"
               onClick={() => setMobileOpen(false)}
-              className="relative block h-8 transition-opacity duration-300 hover:opacity-80"
+              className="relative block h-16 transition-opacity duration-300 hover:opacity-80"
             >
               <img
                 src={LOGO_URL}
                 alt="Anna Parera"
-                className="h-full w-auto object-contain"
+                className="h-full w-auto object-contain brightness-[0.3] contrast-125"
               />
             </Link>
 
