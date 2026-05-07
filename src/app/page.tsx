@@ -288,7 +288,7 @@ export default function CataloguePage() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.1 }}
-        className="hidden lg:block absolute top-0 left-0 right-0 z-30 pointer-events-none pt-64 md:pt-96 lg:pt-[28rem] px-4 text-center"
+        className="hidden lg:block absolute top-0 left-0 right-0 z-30 pointer-events-none pt-14 md:pt-20 lg:pt-24 px-4 text-center"
       >
         <h1 className="font-serif font-light text-white text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
           Anna Parera
