@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navLinks = [
@@ -10,7 +11,11 @@ const navLinks = [
   { href: '/conoceme', label: 'Conóceme' },
 ];
 
+const LOGO_POSITIVO = 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_100,w_200/Logo_en_Positivo_1_uium9i.png';
+const LOGO_NEGATIVO = 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_100,w_200/Logo_en_Negativo_uapzpr.png';
+
 export default function Navbar() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -20,6 +25,10 @@ export default function Navbar() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Determine if page should have transparent header
+  const isTransparentPage = pathname === '/' || pathname === '/bodas' || pathname === '/familia';
+  const usePositiveLogo = scrolled || !isTransparentPage;
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -45,9 +54,13 @@ export default function Navbar() {
             <Link
               href="/"
               onClick={() => setMobileOpen(false)}
-              className="relative text-2xl font-serif font-light tracking-wide text-neutral-900 dark:text-white transition-colors duration-500"
+              className="relative block h-8 transition-opacity duration-300 hover:opacity-80"
             >
-              Anna Parera
+              <img
+                src={usePositiveLogo ? LOGO_POSITIVO : LOGO_NEGATIVO}
+                alt="Anna Parera"
+                className="h-full w-auto object-contain"
+              />
             </Link>
 
             {/* Desktop links */}
@@ -115,6 +128,22 @@ export default function Navbar() {
             <div className="absolute inset-0 bg-[#f5e6db]/98 dark:bg-neutral-950/98 backdrop-blur-md" />
 
             <div className="relative flex flex-col items-center justify-center h-full px-8">
+              {/* Mobile menu logo */}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="absolute top-8"
+              >
+                <Link href="/" onClick={() => setMobileOpen(false)}>
+                  <img
+                    src={LOGO_POSITIVO}
+                    alt="Anna Parera"
+                    className="h-7 w-auto object-contain"
+                  />
+                </Link>
+              </motion.div>
               <nav className="flex flex-col items-center gap-2">
                 {[...navLinks, { href: '/contacto', label: 'Contacto' }].map((link, i) => (
                   <motion.div
