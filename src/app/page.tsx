@@ -1,429 +1,351 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { X, ChevronDown } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 
-const categories = [
+// ---------- Split hero services ----------
+const services = [
   {
     id: 'bodas',
     title: 'Bodas',
     subtitle: 'Wedding Photography',
-    stories: [
-      {
-        couple: 'Silvia & David',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/DSC00577.jpg',
-        href: '/bodas/silvia-david',
-      },
-      {
-        couple: 'Evelyn & Carlos',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/DSC06109.jpg',
-        href: '/bodas/evelyn-carlos',
-      },
-      {
-        couple: 'Sonia & Pablo',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/DSC06819.jpg',
-        href: '/bodas/sonia-pablo',
-      },
-    ],
+    tagline: 'Historias de amor eternas',
+    image:
+      'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto/Home-Bodas-1.jpg',
     href: '/bodas',
   },
   {
-    id: 'embarazo',
-    title: 'Embarazo',
-    subtitle: 'Maternity Sessions',
-    stories: [
-      {
-        couple: 'María & Carlos',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/DSC09790.jpg',
-        href: '/familia/embarazo-maria-carlos',
-      },
-      {
-        couple: 'Laura',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/DSC04671.jpg',
-        href: '/familia/embarazo-laura',
-      },
-      {
-        couple: 'Sofía & Jorge',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/Diseno-sin-titulo-1.jpg',
-        href: '/familia/embarazo-sofia-jorge',
-      },
-    ],
-    href: '/familia',
-  },
-  {
     id: 'familia',
-    title: 'Familia',
-    subtitle: 'Family Portraits',
-    stories: [
-      {
-        couple: 'Familia González',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/DSC01290.jpg',
-        href: '/familia/familia-gonzalez',
-      },
-      {
-        couple: 'Familia Martínez',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/DSC01649.jpg',
-        href: '/familia/familia-martinez',
-      },
-      {
-        couple: 'Familia Rodríguez',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/DSC03595.jpg',
-        href: '/familia/familia-rodriguez',
-      },
-    ],
-    href: '/familia',
-  },
-  {
-    id: 'newborn',
-    title: 'Newborn',
-    subtitle: 'Recién Nacidos',
-    stories: [
-      {
-        couple: 'Bebé Emma',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/DSC09256-Edit.jpg',
-        href: '/familia/newborn-emma',
-      },
-      {
-        couple: 'Bebé Lucas',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/DSC08040-1.jpg',
-        href: '/familia/newborn-lucas',
-      },
-      {
-        couple: 'Bebé Olivia',
-        image: 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_800/DSC04412.jpg',
-        href: '/familia/newborn-olivia',
-      },
-    ],
+    title: 'Maternidad y Familia',
+    subtitle: 'Maternity & Family',
+    tagline: 'Momentos que se quedan para siempre',
+    image:
+      'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto/Sin-titulo-10-x-10-cm.jpg',
     href: '/familia',
   },
 ];
 
-// Explicit grid placements for each card position
-// Even categories: featured LEFT (card 0 big, cards 1+2 stacked right)
-// Odd categories: featured RIGHT (cards 0+1 stacked left, card 2 big)
-function getGridPlacement(catIndex: number, cardIndex: number): string {
-  const isEven = catIndex % 2 === 0;
-  if (isEven) {
-    // Featured left layout
-    if (cardIndex === 0) return 'md:col-start-1 md:col-end-3 md:row-start-1 md:row-end-3';
-    if (cardIndex === 1) return 'md:col-start-3 md:col-end-4 md:row-start-1 md:row-end-2';
-    return 'md:col-start-3 md:col-end-4 md:row-start-2 md:row-end-3';
-  } else {
-    // Featured right layout
-    if (cardIndex === 0) return 'md:col-start-1 md:col-end-2 md:row-start-1 md:row-end-2';
-    if (cardIndex === 1) return 'md:col-start-1 md:col-end-2 md:row-start-2 md:row-end-3';
-    return 'md:col-start-2 md:col-end-4 md:row-start-1 md:row-end-3';
-  }
-}
+// ---------- Catalogue ----------
+type Photo = { id: string; href: string; label: string };
+type Collection = {
+  id: string;
+  number: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  href: string;
+  photos: Photo[];
+};
 
-function StoryCard({ story, index, layoutIndex }: { story: { couple: string; image: string; href: string }; index: number; layoutIndex: number }) {
-  const isFeatured = layoutIndex % 2 === 0 ? index === 0 : index === 2;
-  const placement = getGridPlacement(layoutIndex, index);
+const cld = (id: string, w = 900) =>
+  `https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_80,w_${w}/${id}.jpg`;
 
+const collections: Collection[] = [
+  {
+    id: 'bodas',
+    number: '01',
+    title: 'Bodas',
+    subtitle: 'Wedding Stories',
+    description:
+      'Días únicos contados desde la emoción real. Luz natural, gestos auténticos y detalles que perduran.',
+    href: '/bodas',
+    photos: [
+      { id: 'DSC00577', href: '/bodas/silvia-david', label: 'Silvia & David' },
+      { id: 'DSC06109', href: '/bodas/evelyn-carlos', label: 'Evelyn & Carlos' },
+      { id: 'DSC06819', href: '/bodas/sonia-pablo', label: 'Sonia & Pablo' },
+      { id: 'DSC09544', href: '/bodas/silvia-david', label: 'Silvia & David' },
+      { id: 'DSC05915', href: '/bodas/sonia-pablo', label: 'Sonia & Pablo' },
+      { id: 'DSC05620', href: '/bodas/evelyn-carlos', label: 'Evelyn & Carlos' },
+      { id: 'DSC07171', href: '/bodas/sonia-pablo', label: 'Sonia & Pablo' },
+      { id: 'DSC00400', href: '/bodas/silvia-david', label: 'Silvia & David' },
+      { id: 'DSC05146', href: '/bodas/evelyn-carlos', label: 'Evelyn & Carlos' },
+      { id: 'DSC07480', href: '/bodas/sonia-pablo', label: 'Sonia & Pablo' },
+      { id: 'DSC01301', href: '/bodas/silvia-david', label: 'Silvia & David' },
+      { id: 'DSC06618', href: '/bodas/evelyn-carlos', label: 'Evelyn & Carlos' },
+    ],
+  },
+  {
+    id: 'embarazo',
+    number: '02',
+    title: 'Embarazo',
+    subtitle: 'Maternity Sessions',
+    description:
+      'La belleza de la espera. Sesiones íntimas que celebran el cuerpo, la luz y la nueva vida.',
+    href: '/familia',
+    photos: [
+      { id: 'DSC09790', href: '/familia/embarazo-maria-carlos', label: 'María & Carlos' },
+      { id: 'DSC04671', href: '/familia/embarazo-laura', label: 'Laura' },
+      { id: 'Diseno-sin-titulo-1', href: '/familia/embarazo-sofia-jorge', label: 'Sofía & Jorge' },
+      { id: 'DSC06227', href: '/familia/embarazo-maria-carlos', label: 'María & Carlos' },
+      { id: 'DSC07886', href: '/familia/embarazo-maria-carlos', label: 'María & Carlos' },
+      { id: 'DSC04407-Enhanced-NR', href: '/familia/embarazo-maria-carlos', label: 'María & Carlos' },
+      { id: 'DSC06606', href: '/familia/embarazo-laura', label: 'Laura' },
+      { id: 'DSC09375', href: '/familia/embarazo-maria-carlos', label: 'María & Carlos' },
+      { id: 'DSC02869', href: '/familia/embarazo-maria-carlos', label: 'María & Carlos' },
+    ],
+  },
+  {
+    id: 'familia',
+    number: '03',
+    title: 'Familia',
+    subtitle: 'Family Portraits',
+    description:
+      'Retratos familiares vivos, sin poses forzadas. Lo que sois, en su mejor versión.',
+    href: '/familia',
+    photos: [
+      { id: 'DSC01290', href: '/familia/familia-gonzalez', label: 'Familia González' },
+      { id: 'DSC01649', href: '/familia/familia-martinez', label: 'Familia Martínez' },
+      { id: 'DSC03595', href: '/familia/familia-rodriguez', label: 'Familia Rodríguez' },
+      { id: 'DSC1598', href: '/familia/familia-gonzalez', label: 'Familia González' },
+      { id: 'DSC08631', href: '/familia/familia-gonzalez', label: 'Familia González' },
+      { id: 'DSC01731', href: '/familia/familia-gonzalez', label: 'Familia González' },
+      { id: 'DSC05791', href: '/familia/familia-gonzalez', label: 'Familia González' },
+      { id: 'DSC06319', href: '/familia/familia-gonzalez', label: 'Familia González' },
+      { id: 'DSC03568', href: '/familia/familia-rodriguez', label: 'Familia Rodríguez' },
+      { id: 'DSC05569', href: '/familia/familia-martinez', label: 'Familia Martínez' },
+      { id: 'DSC01524-Enhanced-NR-2', href: '/familia/familia-martinez', label: 'Familia Martínez' },
+    ],
+  },
+  {
+    id: 'newborn',
+    number: '04',
+    title: 'Newborn',
+    subtitle: 'Recién Nacidos',
+    description:
+      'Los primeros días, la piel diminuta, el silencio. Sesiones cálidas y delicadas en casa o estudio.',
+    href: '/familia',
+    photos: [
+      { id: 'DSC09256-Edit', href: '/familia/newborn-emma', label: 'Bebé Emma' },
+      { id: 'DSC08040-1', href: '/familia/newborn-lucas', label: 'Bebé Lucas' },
+      { id: 'DSC04412', href: '/familia/newborn-olivia', label: 'Bebé Olivia' },
+      { id: 'DSC05466', href: '/familia/newborn-emma', label: 'Bebé Emma' },
+      { id: 'DSC03462', href: '/familia/newborn-emma', label: 'Bebé Emma' },
+      { id: 'DSC04508', href: '/familia/newborn-emma', label: 'Bebé Emma' },
+      { id: 'DSC04290', href: '/familia/newborn-emma', label: 'Bebé Emma' },
+      { id: 'DSC07908-Edit', href: '/familia/newborn-lucas', label: 'Bebé Lucas' },
+      { id: 'DSC04408', href: '/familia/newborn-olivia', label: 'Bebé Olivia' },
+      { id: 'DSC04242', href: '/familia/newborn-olivia', label: 'Bebé Olivia' },
+    ],
+  },
+];
+
+// ---------- Hero panel ----------
+function ServicePanel({
+  service,
+  index,
+}: {
+  service: (typeof services)[number];
+  index: number;
+}) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.7, delay: index * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className={`group relative overflow-hidden bg-neutral-100 dark:bg-neutral-900 rounded-sm ${placement} ${
-        isFeatured ? 'aspect-[3/4] md:aspect-auto' : 'aspect-[4/5]'
-      }`}
+      initial={{ opacity: 0, y: index === 0 ? -30 : 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, delay: 0.4 + index * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="relative group flex-1 min-h-[55vh] md:min-h-screen overflow-hidden bg-neutral-900"
     >
-      <Link href={story.href} className="block w-full h-full">
+      <Link href={service.href} className="block w-full h-full">
         <motion.img
-          src={story.image}
-          alt={story.couple}
-          loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
+          src={service.image}
+          alt={service.title}
+          className="absolute inset-0 w-full h-full object-contain transition-transform duration-[1.5s] ease-out group-hover:scale-[1.03]"
         />
-        
-        {/* Gradient overlay - subtle by default, stronger on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent transition-all duration-500 group-hover:from-black/80 group-hover:via-black/30" />
-        
-        {/* Name overlay with slide-up animation on hover */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 transform transition-transform duration-500 group-hover:-translate-y-2">
-          <p className="text-xs uppercase tracking-[0.25em] text-white/60 mb-2 transition-colors duration-500 group-hover:text-white/80">
-            {isFeatured ? 'Destacado' : 'Ver historia'}
+        <div className="absolute inset-0 bg-black/40 transition-all duration-700 group-hover:bg-black/25" />
+        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 md:px-12">
+          <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-white/70 mb-5">
+            {service.subtitle}
           </p>
-          <h3 className={`font-serif text-white leading-tight ${
-            isFeatured ? 'text-3xl md:text-5xl' : 'text-2xl md:text-3xl'
-          }`}>
-            {story.couple}
-          </h3>
-          
-          {/* Animated line accent */}
-          <div className="mt-3 h-[1px] bg-white/40 w-0 group-hover:w-16 transition-all duration-700 ease-out" />
-        </div>
-
-        {/* Corner arrow indicator */}
-        <div className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-white/0 group-hover:bg-white/20 transition-all duration-500 transform translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100">
-          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 17L17 7M17 7H7M17 7v10" />
-          </svg>
+          <h2 className="font-serif font-light text-white leading-[1.05] text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight">
+            {service.title}
+          </h2>
+          <p className="mt-6 text-base md:text-lg text-white/70 font-light max-w-xs">
+            {service.tagline}
+          </p>
+          <div className="mt-10 flex items-center gap-3 text-white/90">
+            <span className="text-xs uppercase tracking-[0.3em]">Descubrir</span>
+            <span className="block h-[1px] w-10 bg-white/60 transition-all duration-500 group-hover:w-20 group-hover:bg-white" />
+            <svg className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
         </div>
       </Link>
     </motion.div>
   );
 }
 
-export default function CataloguePage() {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const heroRef = useRef<HTMLElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ['start start', 'end start'],
-  });
-
-  const heroTextY = useTransform(scrollYProgress, [0, 1], [0, 150]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const videoScale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
-
-  const filteredCategories = selectedCategory === 'all' 
-    ? categories 
-    : categories.filter(cat => cat.id === selectedCategory);
-
-  const filterOptions = [
-    { id: 'all', label: 'Todo', count: categories.reduce((sum, c) => sum + c.stories.length, 0) },
-    { id: 'bodas', label: 'Bodas', count: categories.find(c => c.id === 'bodas')?.stories.length || 0 },
-    { id: 'embarazo', label: 'Embarazo', count: categories.find(c => c.id === 'embarazo')?.stories.length || 0 },
-    { id: 'familia', label: 'Familia', count: categories.find(c => c.id === 'familia')?.stories.length || 0 },
-    { id: 'newborn', label: 'Newborn', count: categories.find(c => c.id === 'newborn')?.stories.length || 0 },
-  ];
-
+// ---------- Masonry photo card ----------
+function MasonryCard({ photo, idx }: { photo: Photo; idx: number }) {
   return (
-    <main className="min-h-screen bg-[#f5e6db] dark:bg-neutral-950">
-      {/* Immersive Hero */}
-      <section ref={heroRef} className="relative h-[75vh] md:h-screen flex items-center justify-center overflow-hidden bg-neutral-900">
-        <motion.div style={{ scale: videoScale }} className="absolute inset-0">
-          <video 
-            src="https://res.cloudinary.com/df5oaz5cx/video/upload/v1776101179/Video-Web_u2wcrt.mp4" 
-            autoPlay 
-            muted 
-            loop 
-            playsInline
-            className="w-full h-full object-cover opacity-60"
-          />
-        </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-[#f5e6db] dark:to-neutral-950" />
-        
-        <motion.div 
-          style={{ y: heroTextY, opacity: heroOpacity }}
-          className="relative z-10 text-center px-4"
-        >
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-sm md:text-base uppercase tracking-[0.35em] text-white/70 mb-6"
-          >
-            Fotografía con alma · Barcelona
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="text-6xl sm:text-7xl md:text-9xl font-serif font-light text-white mb-6 tracking-tight"
-          >
-            Anna Parera
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="text-lg md:text-xl text-white/60 font-light max-w-md mx-auto"
-          >
-            Bodas · Familia · Embarazo · Newborn
-          </motion.p>
-        </motion.div>
+    <motion.figure
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.8, delay: (idx % 4) * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="mb-6 md:mb-8 break-inside-avoid"
+    >
+      <Link
+        href={photo.href}
+        className="group relative block overflow-hidden bg-neutral-100 dark:bg-neutral-900"
+      >
+        <img
+          src={cld(photo.id, 1600)}
+          alt={photo.label}
+          loading="lazy"
+          className="w-full h-auto object-cover transition-transform duration-[1.6s] ease-out group-hover:scale-[1.03]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      </Link>
+      <figcaption className="mt-3 flex items-baseline justify-between gap-4">
+        <span className="font-serif text-neutral-800 dark:text-neutral-100 text-lg md:text-xl leading-tight">
+          {photo.label}
+        </span>
+        <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-400 dark:text-neutral-500">
+          {String(idx + 1).padStart(2, '0')}
+        </span>
+      </figcaption>
+    </motion.figure>
+  );
+}
 
-        {/* Scroll indicator */}
+// ---------- Collection section ----------
+function CollectionSection({ collection, index }: { collection: Collection; index: number }) {
+  const reverse = index % 2 === 1;
+  return (
+    <section className="relative">
+      <div className="container max-w-7xl mx-auto px-4 md:px-8 pt-20 md:pt-28 pb-10 md:pb-14">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.7 }}
+          className={`flex flex-col md:flex-row md:items-end gap-6 md:gap-12 ${
+            reverse ? 'md:flex-row-reverse md:text-right' : ''
+          }`}
+        >
+          <div className="flex-1">
+            <p className="text-[10px] md:text-xs tracking-[0.4em] uppercase text-teal-600 dark:text-teal-400 mb-3">
+              {collection.number} &nbsp;—&nbsp; {collection.subtitle}
+            </p>
+            <h3 className="font-serif font-light text-neutral-900 dark:text-white leading-[1] text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight">
+              {collection.title}
+            </h3>
+          </div>
+          <div className="md:max-w-sm">
+            <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm md:text-base">
+              {collection.description}
+            </p>
+            <Link
+              href={collection.href}
+              className="group inline-flex items-center gap-3 mt-5 text-xs uppercase tracking-[0.3em] text-neutral-900 dark:text-white"
+            >
+              <span>Ver colección</span>
+              <span className="block h-[1px] w-8 bg-neutral-400 group-hover:w-14 group-hover:bg-neutral-900 dark:group-hover:bg-white transition-all duration-500" />
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Masonry catalogue grid */}
+      <div className="max-w-[1800px] mx-auto px-4 md:px-8 lg:px-12 pb-24 md:pb-32">
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 md:gap-8 [column-fill:_balance]">
+          {collection.photos.map((photo, i) => (
+            <MasonryCard key={`${photo.id}-${i}`} photo={photo} idx={i} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ---------- Page ----------
+export default function CataloguePage() {
+  return (
+    <main className="relative min-h-screen bg-[#f5e6db] dark:bg-neutral-950">
+      {/* Centered title overlay */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.1 }}
+        className="absolute top-0 left-0 right-0 z-30 pointer-events-none pt-24 md:pt-28 px-4 text-center"
+      >
+        <h1 className="font-serif font-light text-white text-3xl sm:text-4xl md:text-5xl tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+          Anna Parera
+        </h1>
+        <p className="mt-2 text-[10px] md:text-xs uppercase tracking-[0.4em] text-white/75 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
+          Fotógrafa de vida
+        </p>
+      </motion.div>
+
+      {/* Split hero */}
+      <section className="relative flex flex-col md:flex-row min-h-screen">
+        {services.map((service, i) => (
+          <ServicePanel key={service.id} service={service} index={i} />
+        ))}
+        <div aria-hidden className="hidden md:block absolute inset-y-0 left-1/2 w-[1px] bg-white/15 z-20" />
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
-          style={{ opacity: heroOpacity }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
+          transition={{ delay: 1.6, duration: 1 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 text-white/70"
         >
-          <span className="text-[10px] uppercase tracking-[0.3em] text-white/50">Descubrir</span>
+          <span className="text-[10px] uppercase tracking-[0.35em]">Catálogo</span>
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <ChevronDown className="w-5 h-5 text-white/50" />
+            <ChevronDown className="w-5 h-5" />
           </motion.div>
         </motion.div>
       </section>
 
-      {/* Category Filter */}
-      <section className="sticky top-0 z-40 bg-white/95 dark:bg-neutral-950/90 backdrop-blur-xl border-b border-neutral-200/50 dark:border-neutral-800/50">
-        <div className="container max-w-7xl mx-auto px-4 py-5">
-          <div className="flex gap-2 justify-center overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory">
-            {filterOptions.map((filter) => (
-              <motion.button
-                key={filter.id}
-                onClick={() => setSelectedCategory(filter.id)}
-                whileTap={{ scale: 0.95 }}
-                className={`relative px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 snap-start flex-shrink-0 ${
-                  selectedCategory === filter.id
-                    ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 shadow-md'
-                    : 'bg-neutral-100 text-neutral-500 hover:text-neutral-800 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-200'
-                }`}
-              >
-                {filter.label}
-                <span className={`ml-1.5 text-[10px] transition-colors duration-300 ${
-                  selectedCategory === filter.id
-                    ? 'text-white/60 dark:text-neutral-500'
-                    : 'text-neutral-400 dark:text-neutral-600'
-                }`}>
-                  {filter.count}
-                </span>
-              </motion.button>
-            ))}
-          </div>
-        </div>
+      {/* Catalogue intro */}
+      <section className="container max-w-4xl mx-auto px-4 pt-24 md:pt-32 pb-4 text-center">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-teal-600 dark:text-teal-400 mb-5"
+        >
+          Catálogo
+        </motion.p>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="font-serif font-light text-neutral-900 dark:text-white text-4xl sm:text-5xl md:text-6xl tracking-tight leading-[1.05]"
+        >
+          Cada momento, su propia luz
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mt-5 text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto leading-relaxed"
+        >
+          Un recorrido por mis colecciones — bodas, embarazo, familia y recién nacidos.
+        </motion.p>
       </section>
 
-      {/* Catalogue Grid */}
-      <section className="py-20 px-4">
-        <div className="container max-w-7xl mx-auto">
-          <div className="space-y-32">
-            <AnimatePresence mode="wait">
-              {filteredCategories.map((category, catIndex) => (
-                <motion.div
-                  key={category.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="space-y-10"
-                >
-                  {/* Category Header */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="flex items-end justify-between"
-                  >
-                    <div>
-                      <p className="text-xs text-teal-600 dark:text-teal-400 tracking-[0.3em] uppercase mb-2">
-                        {String(catIndex + 1).padStart(2, '0')} — {category.subtitle}
-                      </p>
-                      <h2 className="text-5xl md:text-7xl font-serif font-light text-neutral-900 dark:text-white">
-                        {category.title}
-                      </h2>
-                    </div>
-                    <Link
-                      href={category.href}
-                      className="group flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors pb-2"
-                    >
-                      <span className="hidden sm:inline">Ver colección</span>
-                      <span className="w-8 h-[1px] bg-neutral-300 group-hover:w-12 group-hover:bg-neutral-900 dark:group-hover:bg-white transition-all duration-500" />
-                      <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  </motion.div>
+      {/* Collections */}
+      <div className="divide-y divide-neutral-200/60 dark:divide-neutral-800/60">
+        {collections.map((c, i) => (
+          <CollectionSection key={c.id} collection={c} index={i} />
+        ))}
+      </div>
 
-                  {/* Image Grid - Asymmetric layout */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-3 md:gap-4">
-                    {category.stories.map((story, imgIndex) => (
-                      <StoryCard
-                        key={imgIndex}
-                        story={story}
-                        index={imgIndex}
-                        layoutIndex={catIndex}
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-        </div>
+      {/* Footer credit strip */}
+      <section className="py-16 px-4 text-center">
+        <p className="text-xs uppercase tracking-[0.35em] text-neutral-500 dark:text-neutral-500">
+          Anna Parera · Barcelona
+        </p>
       </section>
-
-      {/* Contact CTA */}
-      <section className="relative py-32 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#f5e6db] via-[#ede0d5] to-[#e5d5c8] dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950" />
-        <div className="container max-w-4xl mx-auto text-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="space-y-10"
-          >
-            <p className="text-xs uppercase tracking-[0.3em] text-teal-600 dark:text-teal-400">
-              ¿Empezamos?
-            </p>
-            <h2 className="text-5xl sm:text-6xl md:text-7xl font-serif font-light text-neutral-800 dark:text-white leading-tight">
-              Reserva tu sesión
-            </h2>
-            <p className="text-lg text-neutral-500 dark:text-neutral-400 max-w-lg mx-auto leading-relaxed">
-              Creemos juntos recuerdos que durarán para siempre. Cada historia merece ser contada con autenticidad.
-            </p>
-            <div className="pt-2">
-              <motion.a
-                href="mailto:annaparera@annaparera.com"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-                className="inline-block px-12 py-4 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-neutral-900 rounded-full text-sm font-medium tracking-wide transition-colors duration-300"
-              >
-                Contactar ahora
-              </motion.a>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-4 text-sm text-neutral-500 dark:text-neutral-400">
-              <a href="mailto:annaparera@annaparera.com" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
-                annaparera@annaparera.com
-              </a>
-              <span className="hidden sm:block text-neutral-300 dark:text-neutral-700">·</span>
-              <a href="https://wa.me/34697639357" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
-                +34 697 63 93 57
-              </a>
-              <span className="hidden sm:block text-neutral-300 dark:text-neutral-700">·</span>
-              <a href="https://www.instagram.com/annaparerafoto" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
-                @annaparerafoto
-              </a>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Lightbox Modal */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
-            onClick={() => setSelectedImage(null)}
-          >
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
-            
-            <motion.img
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              src={selectedImage}
-              alt="Full size"
-              className="max-w-full max-h-[90vh] object-contain"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </main>
   );
 }
