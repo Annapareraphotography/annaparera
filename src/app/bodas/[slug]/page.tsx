@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, X } from 'lucide-react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { ArrowLeft, X, ChevronLeft, ChevronRight, Calendar, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
 const weddingStories = {
@@ -123,9 +123,35 @@ const weddingStories = {
 export default function WeddingStoryPage() {
   const params = useParams();
   const slug = params.slug as string;
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const heroRef = useRef<HTMLElement>(null);
   
   const story = weddingStories[slug as keyof typeof weddingStories];
+
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const heroTextY = useTransform(scrollYProgress, [0, 1], [0, 80]);
+
+  const navigate = useCallback((dir: 1 | -1) => {
+    if (selectedIndex === null || !story) return;
+    const next = selectedIndex + dir;
+    if (next >= 0 && next < story.images.length) setSelectedIndex(next);
+  }, [selectedIndex, story]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (selectedIndex === null) return;
+      if (e.key === 'Escape') setSelectedIndex(null);
+      if (e.key === 'ArrowRight') navigate(1);
+      if (e.key === 'ArrowLeft') navigate(-1);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [selectedIndex, navigate]);
 
   if (!story) {
     return (
@@ -140,48 +166,87 @@ export default function WeddingStoryPage() {
     );
   }
 
+  const heroImage = story.images[0];
+
   return (
     <main className="min-h-screen bg-[#f5e6db] dark:bg-neutral-950">
-      {/* Header */}
-      <section className="relative py-24 px-4 bg-white dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-800">
+      {/* Hero */}
+      <section ref={heroRef} className="relative h-[70vh] md:h-[85vh] overflow-hidden bg-neutral-900">
+        <motion.div style={{ scale: heroScale }} className="absolute inset-0">
+          <img
+            src={heroImage.replace('w_1200', 'c_fill,g_auto,w_1920,h_1080')}
+            alt={story.title}
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/30" />
+
+        {/* Back button */}
         <Link
-          href="/"
-          className="absolute top-8 left-8 flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          href="/bodas"
+          className="absolute top-24 left-6 md:left-10 z-20 flex items-center gap-2 text-sm text-white/80 hover:text-white transition-colors group"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Volver
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+          <span className="uppercase tracking-[0.2em] text-xs">Bodas</span>
         </Link>
 
-        <div className="container max-w-4xl mx-auto text-center">
+        <motion.div
+          style={{ y: heroTextY, opacity: heroOpacity }}
+          className="relative z-10 h-full flex flex-col items-center justify-end pb-16 md:pb-20 px-4 text-white text-center"
+        >
           <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex items-center gap-6 text-xs uppercase tracking-[0.25em] text-white/60 mb-6"
+          >
+            <span className="flex items-center gap-2">
+              <Calendar className="w-3.5 h-3.5" />
+              {story.date}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-white/40" />
+            <span className="flex items-center gap-2">
+              <MapPin className="w-3.5 h-3.5" />
+              {story.location}
+            </span>
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-5xl md:text-7xl lg:text-8xl font-serif font-light leading-[0.95]"
+          >
+            {story.title}
+          </motion.h1>
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="mt-5 text-lg md:text-xl text-white/70 font-light max-w-xl"
           >
-            <p className="text-sm text-neutral-500 uppercase tracking-widest mb-4">
-              {story.date} · {story.location}
-            </p>
-            <h1 className="text-6xl md:text-7xl font-serif font-light text-neutral-900 dark:text-white mb-6">
-              {story.title}
-            </h1>
-            <p className="text-xl text-neutral-600 dark:text-neutral-400 font-light">
-              {story.description}
-            </p>
-          </motion.div>
-        </div>
+            {story.description}
+          </motion.p>
+        </motion.div>
       </section>
 
       {/* Story */}
-      <section className="py-16 px-4">
+      <section className="py-20 md:py-28 px-4">
         <div className="container max-w-3xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-12 h-[1px] bg-neutral-400 dark:bg-neutral-600 mx-auto mb-12"
+          />
           {story.story.map((paragraph, index) => (
             <motion.p
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="text-lg text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6"
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.7, delay: index * 0.1 }}
+              className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 leading-relaxed mb-8 last:mb-0 font-light"
             >
               {paragraph}
             </motion.p>
@@ -190,97 +255,117 @@ export default function WeddingStoryPage() {
       </section>
 
       {/* Gallery */}
-      <section className="py-16 px-4">
+      <section className="pb-20 md:pb-28 px-4 md:px-6">
         <div className="container max-w-7xl mx-auto">
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-3 md:gap-4">
             {story.images.map((image, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
-                className="break-inside-avoid cursor-pointer group relative overflow-hidden"
-                onClick={() => setSelectedImage(image)}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.6, delay: (index % 3) * 0.1 }}
+                className="break-inside-avoid mb-3 md:mb-4 cursor-pointer group relative overflow-hidden rounded-sm"
+                onClick={() => setSelectedIndex(index)}
               >
                 <img
                   src={image}
-                  alt={`${story.title} ${index + 1}`}
-                  className="w-full h-auto transition-transform duration-700 group-hover:scale-105"
+                  alt={`${story.title} — ${index + 1}`}
+                  loading="lazy"
+                  className="w-full h-auto transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
+                <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Contact */}
-      <section className="py-24 px-4 bg-gradient-to-b from-[#f5e6db] to-[#ede0d5] dark:bg-neutral-950">
-        <div className="container max-w-4xl mx-auto text-center">
+      {/* CTA */}
+      <section className="py-24 px-4 bg-gradient-to-b from-[#f5e6db] to-[#ede0d5] dark:from-neutral-900 dark:to-neutral-950">
+        <div className="container max-w-3xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="space-y-8"
+            transition={{ duration: 0.7 }}
           >
-            <h2 className="text-5xl md:text-6xl font-serif font-light text-neutral-800 dark:text-white">
-              Reserva tu sesión
-            </h2>
-            <p className="text-xl text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-              Creemos juntos recuerdos que durarán para siempre
+            <p className="text-xs uppercase tracking-[0.3em] text-neutral-500 dark:text-neutral-500 mb-4">
+              ¿Preparando vuestra boda?
             </p>
-            <div className="pt-4">
-              <a
-                href="mailto:annaparera@annaparera.com"
-                className="inline-block px-12 py-4 bg-teal-600 hover:bg-teal-700 text-white rounded-full text-base font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-              >
-                Contactar ahora
-              </a>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-6 text-sm text-neutral-600 dark:text-neutral-400">
-              <a href="mailto:annaparera@annaparera.com" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
-                annaparera@annaparera.com
-              </a>
-              <span className="hidden sm:block">·</span>
-              <a href="https://wa.me/34697639357" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
-                +34 697 63 93 57
-              </a>
-              <span className="hidden sm:block">·</span>
-              <a href="https://www.instagram.com/annaparerafoto" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
-                Instagram
-              </a>
-            </div>
+            <h2 className="text-4xl md:text-5xl font-serif font-light text-neutral-800 dark:text-white mb-6">
+              Reserva tu fecha
+            </h2>
+            <p className="text-lg text-neutral-500 dark:text-neutral-400 font-light max-w-xl mx-auto mb-10">
+              Cada historia de amor es única. Hablemos de cómo contar la vuestra.
+            </p>
+            <Link
+              href="/contacto"
+              className="inline-block px-10 py-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-sm uppercase tracking-[0.2em] hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors duration-300"
+            >
+              Contactar
+            </Link>
           </motion.div>
         </div>
       </section>
 
       {/* Lightbox */}
       <AnimatePresence>
-        {selectedImage && (
+        {selectedIndex !== null && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
-            onClick={() => setSelectedImage(null)}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+            onClick={() => setSelectedIndex(null)}
           >
+            {/* Close */}
             <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              onClick={() => setSelectedIndex(null)}
+              className="absolute top-4 right-4 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
-            
+
+            {/* Counter */}
+            <div className="absolute top-5 left-1/2 -translate-x-1/2 text-white/50 text-xs tracking-widest">
+              {selectedIndex + 1} / {story.images.length}
+            </div>
+
+            {/* Prev */}
+            {selectedIndex > 0 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); navigate(-1); }}
+                className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+            )}
+
+            {/* Next */}
+            {selectedIndex < story.images.length - 1 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); navigate(1); }}
+                className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            )}
+
+            {/* Image */}
             <motion.img
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              src={selectedImage}
-              alt="Full size"
-              className="max-w-full max-h-[90vh] object-contain"
+              key={selectedIndex}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+              src={story.images[selectedIndex].replace('w_1200', 'w_1800')}
+              alt={`${story.title} — ${selectedIndex + 1}`}
+              className="max-w-[90vw] max-h-[85vh] object-contain select-none"
               onClick={(e) => e.stopPropagation()}
+              draggable={false}
             />
           </motion.div>
         )}
