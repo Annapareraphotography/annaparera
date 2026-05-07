@@ -154,9 +154,6 @@ function ServicePanel({
         />
         <div className="absolute inset-0 bg-black/40 transition-all duration-700 group-hover:bg-black/25" />
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 md:px-12">
-          <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-[#f5e6db] mb-2">
-            {service.subtitle}
-          </p>
           <h2 className="font-serif font-light text-white leading-[1.05] text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight">
             {service.title}
           </h2>
