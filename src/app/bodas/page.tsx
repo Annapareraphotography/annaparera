@@ -4,6 +4,8 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { ChevronDown, Mail, Phone, Instagram } from 'lucide-react';
+import FaqSection from '@/components/FaqSection';
+import BodasNetWidget from '@/components/BodasNetWidget';
 
 const bodas = [
   {
@@ -29,6 +31,37 @@ const bodas = [
     alt: 'Reportaje de boda natural',
     date: 'Octubre 2025',
     location: 'Can Tarranc, Blanes',
+  },
+];
+
+const faqs = [
+  { 
+    q: '¿Cómo podemos reservar la fecha para nuestra boda?', 
+    a: 'Para reservar vuestra fecha, necesitáis primero agendar una llamada conmigo, firmar un contrato y pagar un depósito del 40%.' 
+  },
+  { 
+    q: '¿Cómo y cuándo recibiremos nuestras fotos?', 
+    a: 'El pack standard incluye aproximadamente 600 fotografías en formato digital entregadas en galería privada en un plazo máximo de 6 semanas.' 
+  },
+  { 
+    q: '¿Trabajas sola o con un asistente?', 
+    a: 'Siempre trabajo con un segundo fotógrafo. Para mí es crucial poder cubrir todas las emociones posibles. Si se precisa videógrafo, también puedo ofreceros dicho servicio.' 
+  },
+  { 
+    q: '¿Cuál es tu política de cancelación?', 
+    a: 'Más de 6 meses: 50% del depósito. Entre 3 y 6 meses: 25%. Menos de 3 meses: no se reembolsa el depósito.' 
+  },
+  { 
+    q: '¿Qué pasa si te enfermas el día de la boda?', 
+    a: 'Tengo una red de fotógrafos profesionales de confianza que pueden cubrir mi lugar.' 
+  },
+  { 
+    q: '¿Podemos reunirnos antes de la boda?', 
+    a: 'Por supuesto. Agendo una reunión inicial y otra más adelante para confirmar que todo va en línea.' 
+  },
+  { 
+    q: '¿Ofreces sesiones de preboda?', 
+    a: 'Sí. Son una excelente manera de conocernos mejor y que os sintáis más cómodos frente a la cámara.' 
   },
 ];
 
@@ -182,6 +215,12 @@ export default function BodasPage() {
           </div>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <FaqSection faqs={faqs} />
+
+      {/* Reviews Widget */}
+      <BodasNetWidget />
 
       {/* Contact CTA */}
       <section className="relative py-32 px-4 overflow-hidden">
