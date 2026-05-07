@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Anna Parera Photography Portfolio
 
-## Getting Started
+**Modern photography portfolio built with Next.js 14**
 
-First, run the development server:
+📸 **Live Site:** http://217.17.230.91:3987/  
+📧 **Contact:** annaparera@annaparera.com  
+📱 **Instagram:** [@annaparerafoto](https://www.instagram.com/annaparerafoto)
+
+---
+
+## 📖 Complete Documentation
+
+**For full design system, architecture, and development guide:**
+
+👉 **See [FORCLAUDE.md](./FORCLAUDE.md)**
+
+---
+
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Development server (http://localhost:3000)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Production build
+npm run build
+
+# Production server
+npm start
+
+# Custom port
+PORT=3987 npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📂 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+annaparera/
+├── src/
+│   ├── app/              # Next.js App Router pages
+│   ├── components/       # React components
+│   └── hooks/            # Custom React hooks
+├── public/               # Static assets
+├── FORCLAUDE.md          # 📖 Complete documentation
+└── package.json
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🎨 Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Next.js 14.2.3** - React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Framer Motion** - Animations
+- **Cloudinary** - Image CDN
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📝 Key Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+✅ **Responsive Design** - Mobile-first approach  
+✅ **Dark Mode** - Automatic theme switching  
+✅ **Optimized Images** - 2-3× faster on mobile  
+✅ **Touch Gestures** - Swipe navigation  
+✅ **Elegant Animations** - Subtle, performant  
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🛠️ For Developers & AI Assistants
+
+**Complete documentation in [FORCLAUDE.md](./FORCLAUDE.md) includes:**
+
+- Design system & color palette
+- Typography guidelines
+- Component patterns
+- Image optimization strategy
+- Responsive design breakpoints
+- Animation patterns
+- Adding new content guide
+- Common issues & solutions
+- Maintenance checklist
+
+---
+
+**Built with ❤️ for Anna Parera Photography**
