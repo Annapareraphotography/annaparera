@@ -11,11 +11,9 @@ const navLinks = [
   { href: '/conoceme', label: 'Conóceme' },
 ];
 
-const LOGO_POSITIVO = 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_100,w_200/Logo_en_Positivo_1_uium9i.png';
-const LOGO_NEGATIVO = 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_100,w_200/Logo_en_Negativo_uapzpr.png';
+const LOGO_URL = 'https://res.cloudinary.com/df5oaz5cx/image/upload/f_auto,q_100,w_200/Logo_en_Positivo_1_uium9i.png';
 
 export default function Navbar() {
-  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -25,10 +23,6 @@ export default function Navbar() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
-  // Determine if page should have transparent header
-  const isTransparentPage = pathname === '/' || pathname === '/bodas' || pathname === '/familia';
-  const usePositiveLogo = scrolled || !isTransparentPage;
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -57,7 +51,7 @@ export default function Navbar() {
               className="relative block h-8 transition-opacity duration-300 hover:opacity-80"
             >
               <img
-                src={usePositiveLogo ? LOGO_POSITIVO : LOGO_NEGATIVO}
+                src={LOGO_URL}
                 alt="Anna Parera"
                 className="h-full w-auto object-contain"
               />
@@ -138,7 +132,7 @@ export default function Navbar() {
               >
                 <Link href="/" onClick={() => setMobileOpen(false)}>
                   <img
-                    src={LOGO_POSITIVO}
+                    src={LOGO_URL}
                     alt="Anna Parera"
                     className="h-7 w-auto object-contain"
                   />
