@@ -304,60 +304,7 @@ export default function CataloguePage() {
           <ServicePanel key={service.id} service={service} index={i} />
         ))}
         <div aria-hidden className="hidden md:block absolute inset-y-0 left-1/2 w-[1px] bg-white/15 z-20" />
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.6, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 text-white/70"
-        >
-          <span className="text-[10px] uppercase tracking-[0.35em]">Catálogo</span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <ChevronDown className="w-5 h-5" />
-          </motion.div>
-        </motion.div>
       </section>
-
-      {/* Catalogue intro */}
-      <section className="container max-w-4xl mx-auto px-4 pt-24 md:pt-32 pb-4 text-center">
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-teal-600 dark:text-teal-400 mb-5"
-        >
-          Catálogo
-        </motion.p>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="font-serif font-light text-neutral-900 dark:text-white text-4xl sm:text-5xl md:text-6xl tracking-tight leading-[1.05]"
-        >
-          Cada momento, su propia luz
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mt-5 text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto leading-relaxed"
-        >
-          Un recorrido por mis colecciones — bodas, embarazo, familia y recién nacidos.
-        </motion.p>
-      </section>
-
-      {/* Collections */}
-      <div className="divide-y divide-neutral-200/60 dark:divide-neutral-800/60">
-        {collections.map((c, i) => (
-          <CollectionSection key={c.id} collection={c} index={i} />
-        ))}
-      </div>
 
       {/* Footer credit strip */}
       <section className="py-16 px-4 text-center">
