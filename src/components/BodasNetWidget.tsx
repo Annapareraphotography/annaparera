@@ -5,13 +5,31 @@ import { motion } from 'framer-motion';
 
 export default function BodasNetWidget() {
   useEffect(() => {
+    // Polyfill for crypto.randomUUID if not available
+    if (typeof crypto !== 'undefined' && !crypto.randomUUID) {
+      (crypto as any).randomUUID = function() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          const r = Math.random() * 16 | 0;
+          const v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      };
+    }
+
     const script = document.createElement('script');
     script.src = 'https://cdn1.bodas.net/js/wp-widget.js?symfnw-ES171-1-20241007-002_www_m_';
     script.async = true;
     script.onload = () => {
       if (typeof (window as any).wpShowReviews === 'function') {
-        (window as any).wpShowReviews(240692, 'red');
+        try {
+          (window as any).wpShowReviews(240692, 'red');
+        } catch (error) {
+          console.warn('Bodas.net widget failed to load:', error);
+        }
       }
+    };
+    script.onerror = () => {
+      console.warn('Failed to load Bodas.net widget script');
     };
     document.body.appendChild(script);
     return () => {
