@@ -154,7 +154,7 @@ function ServicePanel({
         />
         <div className="absolute inset-0 bg-black/40 transition-all duration-700 group-hover:bg-black/25" />
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 md:px-12">
-          <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-white/70 mb-5">
+          <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-[#f5e6db] mb-2">
             {service.subtitle}
           </p>
           <h2 className="font-serif font-light text-white leading-[1.05] text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight">
@@ -286,12 +286,12 @@ function CollectionSection({ collection, index }: { collection: Collection; inde
 export default function CataloguePage() {
   return (
     <main className="relative min-h-screen bg-[#f5e6db] dark:bg-neutral-950">
-      {/* Centered title overlay */}
+      {/* Centered title overlay - hidden on mobile to avoid overlapping */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.1 }}
-        className="absolute top-0 left-0 right-0 z-30 pointer-events-none pt-24 md:pt-28 px-4 text-center"
+        className="hidden lg:block absolute top-0 left-0 right-0 z-30 pointer-events-none pt-24 md:pt-28 px-4 text-center"
       >
         <h1 className="font-serif font-light text-white text-3xl sm:text-4xl md:text-5xl tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
           Anna Parera
