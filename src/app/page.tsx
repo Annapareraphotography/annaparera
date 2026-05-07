@@ -176,36 +176,58 @@ function ServicePanel({
   );
 }
 
-// ---------- Masonry photo card ----------
-function MasonryCard({ photo, idx }: { photo: Photo; idx: number }) {
+// ---------- Catalog plate ----------
+function PlateCard({ photo, idx }: { photo: Photo; idx: number }) {
+  // Alternate plate aspect ratios for a printed-catalog rhythm
+  const aspects = ['aspect-[4/5]', 'aspect-[5/6]', 'aspect-[3/4]', 'aspect-[4/5]'];
+  const aspect = aspects[idx % aspects.length];
+
   return (
     <motion.figure
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.8, delay: (idx % 4) * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="mb-6 md:mb-8 break-inside-avoid"
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.9, delay: (idx % 2) * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="break-inside-avoid"
     >
+      {/* Plate header — small typographic mark above the image */}
+      <div className="flex items-baseline justify-between mb-3 px-1">
+        <span className="text-[10px] uppercase tracking-[0.35em] text-neutral-500 dark:text-neutral-500">
+          Pl. {String(idx + 1).padStart(2, '0')}
+        </span>
+        <span className="hidden md:block h-[1px] flex-1 mx-4 bg-neutral-300/60 dark:bg-neutral-700/60" />
+        <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-400 dark:text-neutral-500">
+          —
+        </span>
+      </div>
+
       <Link
         href={photo.href}
-        className="group relative block overflow-hidden bg-neutral-100 dark:bg-neutral-900"
+        className={`group relative block overflow-hidden bg-neutral-100 dark:bg-neutral-900 ${aspect}`}
       >
         <img
-          src={cld(photo.id, 1600)}
+          src={cld(photo.id, 1800)}
           alt={photo.label}
           loading="lazy"
-          className="w-full h-auto object-cover transition-transform duration-[1.6s] ease-out group-hover:scale-[1.03]"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.8s] ease-out group-hover:scale-[1.04]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+        {/* Hover vignette */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-700" />
+
+        {/* Inner border like a printed plate */}
+        <div className="absolute inset-3 md:inset-4 border border-white/0 group-hover:border-white/40 transition-colors duration-700 pointer-events-none" />
+
+        {/* Centered caption — fades in on hover */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+          <div className="text-center px-6">
+            <p className="font-serif italic text-white text-2xl md:text-3xl leading-tight">
+              {photo.label}
+            </p>
+            <div className="mt-3 mx-auto h-[1px] w-10 bg-white/70" />
+          </div>
+        </div>
       </Link>
-      <figcaption className="mt-3 flex items-baseline justify-between gap-4">
-        <span className="font-serif text-neutral-800 dark:text-neutral-100 text-lg md:text-xl leading-tight">
-          {photo.label}
-        </span>
-        <span className="text-[10px] uppercase tracking-[0.3em] text-neutral-400 dark:text-neutral-500">
-          {String(idx + 1).padStart(2, '0')}
-        </span>
-      </figcaption>
     </motion.figure>
   );
 }
@@ -248,11 +270,11 @@ function CollectionSection({ collection, index }: { collection: Collection; inde
         </motion.div>
       </div>
 
-      {/* Masonry catalogue grid */}
-      <div className="max-w-[1800px] mx-auto px-4 md:px-8 lg:px-12 pb-24 md:pb-32">
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 md:gap-8 [column-fill:_balance]">
+      {/* Catalog plate grid */}
+      <div className="max-w-[1500px] mx-auto px-6 md:px-12 lg:px-20 pb-28 md:pb-40">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 md:gap-x-16 lg:gap-x-24 gap-y-16 md:gap-y-24">
           {collection.photos.map((photo, i) => (
-            <MasonryCard key={`${photo.id}-${i}`} photo={photo} idx={i} />
+            <PlateCard key={`${photo.id}-${i}`} photo={photo} idx={i} />
           ))}
         </div>
       </div>
