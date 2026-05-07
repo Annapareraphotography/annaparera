@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 245 230 219; /* Peach/warm cream */
+  --foreground: 51 51 51;
+  --card: 255 255 255;
+  --card-foreground: 51 51 51;
+  --border: 229 206 194;
+  --muted: 235 220 209;
+  --muted-foreground: 115 115 115;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: 41 37 36;
+    --foreground: 250 250 249;
+    --card: 41 37 36;
+    --card-foreground: 250 250 249;
+    --border: 68 64 60;
+    --muted: 68 64 60;
+    --muted-foreground: 161 161 170;
+  }
+}
+
+body {
+  background: rgb(var(--background));
+  color: rgb(var(--foreground));
+}
